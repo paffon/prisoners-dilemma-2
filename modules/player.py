@@ -6,23 +6,15 @@ from strategies import Strategy
 
 class Player(Debuggable):
     def __init__(self,
+                 name: str = 'Nameless Player',
                  strategy: Strategy = Strategy(),
                  debug: bool = False):
 
         super().__init__(debug)
 
+        self.name = name
         self.strategy = strategy
-
         self.score = 0
-
-    def __repr__(self):
-        # Use self.__dict__ to get a dictionary of all instance attributes
-        keys_to_include = self.get_keys_to_include_in_representation()
-        attrs = ', '.join(f"{key}={value}" for key, value in self.__dict__.items() if key in keys_to_include)
-        return f"Player({attrs})"
-
-    def get_keys_to_include_in_representation(self):
-        return [key for key in self.__dict__.keys() if key != 'debug']
 
     def decide(self, my_moves, their_moves):
         thoughts, decided_action = self.strategy.decide(my_moves, their_moves)

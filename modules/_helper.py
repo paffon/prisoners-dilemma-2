@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 
-
 NARROW_COLUMN = 10  # width in characters
 WIDE_COLUMN = 30  # width in characters
 SPACES = 10
@@ -86,6 +85,7 @@ def put_parts_together(instructions):
 
     return result
 
+
 def print_game_title(game):
     part_0 = 'Round #'
     part_1 = game.player_1.strategy.name
@@ -97,7 +97,7 @@ def print_game_title(game):
         (part_2, WIDE_COLUMN)
     ]
 
-    s = put_parts_together(instructions)
+    s = '\n' + put_parts_together(instructions)
     s += '\n' + '_' * OVERALL_WIDTH
 
     game.print(s)
@@ -154,6 +154,7 @@ def consecutive_equal_length_from_the_end(arr):
         i -= 1
     return count
 
+
 def visualize_game_outcome(name_1, scores_1, name_2, scores_2):
     """
     Visualizes the game outcome over rounds for two players.
@@ -191,3 +192,23 @@ def visualize_game_outcome(name_1, scores_1, name_2, scores_2):
 
     # Show the chart
     plt.show()
+
+
+def add_sign(number):
+    """
+    Add a sign to a number.
+
+    Parameters:
+    number (int): The input number.
+
+    Returns:
+    str: The number with a '+' if positive, '-' if negative, or unchanged if 0.
+    """
+    # Check if the number is positive
+    if number > 0:
+        return '+' + str(number)
+    # Check if the number is negative
+    elif number < 0:
+        return '-' + str(number)
+    # If the number is zero, return it as a string
+    return str(number)
