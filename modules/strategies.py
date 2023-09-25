@@ -11,7 +11,7 @@ class Strategy(Debuggable):
         self.name = name
 
     def decide(self, my_moves, their_moves):
-        return "Default decision", 1
+        return "Default decision", random.random() > 0.75
 
 
 class Cheater(Strategy):

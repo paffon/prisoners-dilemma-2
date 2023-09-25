@@ -20,4 +20,4 @@ if __name__ == '__main__':
                             survival_bias=.0,
                             debug=debug)
 
-    tournament.go()
+    tournament.go(summarize_tournament=True)

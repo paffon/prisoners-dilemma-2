@@ -31,4 +31,16 @@ class Tournament(Debuggable):
                  rounds_per_game=self.rounds_per_game,
                  error_rate=self.error_rate,
                  debug=self.debug).go()
-        # TODO add a tournament summary routine
+        if summarize_tournament and self.debug:
+            self.summarize(all_tuples)
+
+    def summarize(self, all_tuples):
+        self.print(F'{"*" * 18}\nTOURNAMENT SUMMARY\n{"." * 18}')
+
+        total_games = len(all_tuples)
+        sorted_list = sorted(self.players, key=lambda x: -x.score)
+
+        self.print(f'{total_games} games played.')
+        separator = '\n\t'
+        printable = '\t' + separator.join([str(player) for player in sorted_list])
+        self.print(f'Top scores:\n{printable}')

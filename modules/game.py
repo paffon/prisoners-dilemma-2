@@ -37,10 +37,13 @@ class Game(Debuggable):
         return random.random() < self.error_rate
 
     def go(self,
-           show_title: bool = True,
+           show_game_title: bool = False,
            show_round_outcome: bool = False,
-           show_game_summary: bool = True,
+           summarize_game: bool = False,
            visualize_scores: bool = False):
+
+        # Initialize conditions and variables
+
         player_1 = self.player_1
         player_2 = self.player_2
 
@@ -53,8 +56,9 @@ class Game(Debuggable):
         scores_in_game_1 = []
         scores_in_game_2 = []
 
-        if show_title and self.debug:
+        if show_game_title and self.debug:
             helper.print_game_title(self)
+
         for round_number in range(1, self.rounds_per_game + 1):
             thoughts_1, decided_action_1 = player_1.decide(self.moves_1, self.moves_2)
             thoughts_2, decided_action_2 = player_2.decide(self.moves_2, self.moves_1)
@@ -71,20 +75,21 @@ class Game(Debuggable):
             scores_in_game_1.append(self.player_1.score)
             scores_in_game_2.append(self.player_2.score)
 
-            round_data = {k: str(v) for k, v in {
-                'round number': round_number,
-                'thoughts 1': thoughts_1,
-                'decided 1': decided_action_1,
-                'actual 1': actual_action_1,
-                'score 1': self.player_1.score,
-                'thoughts 2': thoughts_2,
-                'decided 2': decided_action_2,
-                'actual 2': actual_action_2,
-                'score 2': self.player_2.score
-            }.items()}
             if show_round_outcome and self.debug:
+                round_data = {k: str(v) for k, v in {
+                    'round number': round_number,
+                    'thoughts 1': thoughts_1,
+                    'thoughts 2': thoughts_2,
+                    'decided 1': decided_action_1,
+                    'decided 2': decided_action_2,
+                    'actual 1': actual_action_1,
+                    'actual 2': actual_action_2,
+                    'score 1': self.player_1.score,
+                    'score 2': self.player_2.score
+                }.items()}
                 helper.print_round_outcome(self, round_data)
-        if show_game_summary and self.debug:
+
+        if summarize_game and self.debug:
             score_delta_1 = self.player_1.score - initial_score_1
             score_delta_2 = self.player_2.score - initial_score_2
 
@@ -99,9 +104,6 @@ class Game(Debuggable):
                                           scores_in_game_1,
                                           self.player_2.strategy.name,
                                           scores_in_game_2)
-
-    def report_scores(self):
-        return self.player_1.score, self.player_2.score
 
 
 if __name__ == '__main__':
