@@ -9,6 +9,7 @@ class Player(Debuggable):
                  name: str = 'Nameless Player',
                  generation: int = 0,
                  strategy: Strategy = Strategy(),
+                 score: int = 0,
                  debug: bool = False):
 
         super().__init__(debug=debug)
@@ -17,7 +18,7 @@ class Player(Debuggable):
         self.generation = generation
         self.display_name = self.name + f' (gen. {generation})'
         self.strategy = strategy
-        self.score = 0
+        self.score = score
 
     def decide(self, my_moves, their_moves):
         strategy = self.strategy

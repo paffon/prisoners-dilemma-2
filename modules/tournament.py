@@ -19,15 +19,16 @@ class Tournament(Debuggable):
 
         super().__init__(debug=debug)
 
-        self.players = players
         self.games_between_each_two_players = games_between_each_two_players
         self.rounds_per_game = rounds_per_game
         self.error_rate = error_rate
         self.survival_rate = survival_rate
         self.survival_bias = survival_bias
+        self.current_generation = players
+        self.generations = [self.current_generation]
 
     def go(self, game_printouts_instructions: dict, summarize_tournament: bool = False):
-        all_tuples = list(combinations(self.players, 2))
+        all_tuples = list(combinations(self.current_generation, 2))
         for i, players_tuple in enumerate(all_tuples):
             player_1, player_2 = players_tuple
             game = Game(name=f'Game {i}',
@@ -47,19 +48,17 @@ class Tournament(Debuggable):
         self.print(F'{"*" * 18}\nTOURNAMENT SUMMARY\n{"." * 18}')
 
         total_games = len(all_tuples)
-        sorted_list = sorted(self.players, key=lambda x: -x.score)
+        sorted_list = sorted(self.current_generation, key=lambda x: -x.score)
 
         self.print(f'{total_games} games played.')
         self.print('Ranking:')
 
-        amount_of_surviving_players = round(self.survival_rate * len(self.players))
-        max_width = max([len(str(player)) for player in self.players])
+        amount_of_surviving_players = round(self.survival_rate * len(self.current_generation))
+        max_width = max([len(str(player)) for player in self.current_generation])
         for i, player in enumerate(sorted_list):
-            if i == amount_of_surviving_players - 1:
+            if i == amount_of_surviving_players:
                 self.print('\t' + 'Survival boundary'.center(max_width,'-'))
-            self.print(f'\t{i}. {player}')
-
-        pass
+            self.print(f'\t{i+1}. {player}')
 
     def get_the_surviving_players(self):
         """
@@ -69,7 +68,7 @@ class Tournament(Debuggable):
             list: List of surviving players.
         """
 
-        total_players = len(self.players)
+        total_players = len(self.current_generation)
 
         # Get random indices for the surviving players
         amount_of_surviving_players = round(self.survival_rate * total_players)
@@ -78,7 +77,7 @@ class Tournament(Debuggable):
         indices_of_surviving_players = scrambled_indices[:amount_of_surviving_players]
 
         # Sort the players by score in descending order
-        sorted_list = sorted(self.players, key=lambda x: -x.score)
+        sorted_list = sorted(self.current_generation, key=lambda x: -x.score)
 
         # Get the surviving players based on their indices
         surviving_players = [sorted_list[i] for i in indices_of_surviving_players]
@@ -86,7 +85,7 @@ class Tournament(Debuggable):
         return surviving_players
 
     def get_next_generation_of_players(self):
-        amount_of_players_in_the_tournament_in_total = len(self.players)
+        amount_of_players_in_the_tournament_in_total = len(self.current_generation)
         survived_players = self.get_the_surviving_players()
         amount_of_survived_players = len(survived_players)
         multiplication_factors = self.get_multiplication_factors(
@@ -130,3 +129,8 @@ class Tournament(Debuggable):
             for _ in range(factor):
                 new_generation.append(player.give_birth())
         return new_generation
+
+    def add_new_generation(self):
+        new_generation = self.get_next_generation_of_players()
+        self.generations.append(new_generation)
+        self.current_generation = new_generation
