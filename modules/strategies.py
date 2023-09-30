@@ -6,10 +6,11 @@ from _debuggable import Debuggable
 
 
 class Strategy(Debuggable):
-    def __init__(self, name='Nameless Strategy', first_move: int = None, debug: bool = False):
+    def __init__(self, name: str = 'Nameless Strategy', first_move: int = None, debug: bool = False):
         super().__init__(debug=debug)
         self.name = name
         self.first_move = first_move
+        pass
 
     def first_move_thoughts(self):
         if self.first_move is None:

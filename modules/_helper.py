@@ -97,14 +97,14 @@ def put_parts_together(instructions, separator=SEPARATOR):
 
 def print_game_title(game):
     line_title = [
-        (game.display_name, NARROW_COLUMN),
-        (game.player_1.display_name, WIDE_COLUMN),
-        (game.player_2.display_name, WIDE_COLUMN),
+        (game.name, NARROW_COLUMN),
+        (game.player_1.name, WIDE_COLUMN),
+        (game.player_2.name, WIDE_COLUMN),
     ]
     line_strategies = [
         ('Strategies: ', NARROW_COLUMN),
-        (game.player_1.strategy.display_name, WIDE_COLUMN),
-        (game.player_2.strategy.display_name, WIDE_COLUMN),
+        (game.player_1.strategy.name, WIDE_COLUMN),
+        (game.player_2.strategy.name, WIDE_COLUMN),
     ]
     for line in [line_title, line_strategies]:
         game.print(put_parts_together(line))
@@ -258,7 +258,7 @@ def add_sign(number):
 
 def summarize_game(game, initial_score_1, moves_1, initial_score_2, moves_2):
     line_sep = '_' * OVERALL_WIDTH
-    game.print(f'\n{line_sep}\n{game.display_name} summary:\n')
+    game.print(f'\n{line_sep}\n{game.name} summary:\n')
     score_delta_1 = game.player_1.score - initial_score_1
     score_delta_2 = game.player_2.score - initial_score_2
 
@@ -271,8 +271,8 @@ def summarize_game(game, initial_score_1, moves_1, initial_score_2, moves_2):
     # Display players' properties and score gain/loss in this game
     line_names_and_scores = [
         ('Names & scores', NARROW_COLUMN),
-        (f'{game.player_1.display_name}, score: {game.player_1.score} ({signed_delta_1})', col_width),
-        (f'{game.player_2.display_name}, score: {game.player_2.score} ({signed_delta_2})', col_width), ]
+        (f'{game.player_1.name}, score: {game.player_1.score} ({signed_delta_1})', col_width),
+        (f'{game.player_2.name}, score: {game.player_2.score} ({signed_delta_2})', col_width), ]
     line_strategies = [
         ('Strategies', NARROW_COLUMN),
         (str(game.player_1.strategy), col_width),

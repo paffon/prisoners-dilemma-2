@@ -7,8 +7,8 @@ from strategies import Strategy
 class Player(Debuggable):
     def __init__(self,
                  name: str = 'Nameless Player',
-                 generation: int = 0,
                  strategy: Strategy = Strategy(),
+                 generation: int = 0,
                  score: int = 0,
                  debug: bool = False):
 
@@ -16,7 +16,7 @@ class Player(Debuggable):
 
         self.name = name
         self.generation = generation
-        self.display_name = self.name + f' (gen. {generation})'
+        self.display_name = f'{self.name} (gen: {generation})'
         self.strategy = strategy
         self.score = score
 

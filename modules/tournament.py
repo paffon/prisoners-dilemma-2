@@ -1,5 +1,9 @@
 import math
+from collections import defaultdict
 from itertools import combinations
+
+import pandas as pd
+from matplotlib import pyplot as plt
 
 from _debuggable import Debuggable
 import _helper as helper
@@ -57,8 +61,8 @@ class Tournament(Debuggable):
         max_width = max([len(str(player)) for player in self.current_generation])
         for i, player in enumerate(sorted_list):
             if i == amount_of_surviving_players:
-                self.print('\t' + 'Survival boundary'.center(max_width,'-'))
-            self.print(f'\t{i+1}. {player}')
+                self.print('\t' + 'Survival boundary'.center(max_width, '-'))
+            self.print(f'\t{i + 1}. {player}')
 
     def get_the_surviving_players(self):
         """
@@ -134,3 +138,55 @@ class Tournament(Debuggable):
         new_generation = self.get_next_generation_of_players()
         self.generations.append(new_generation)
         self.current_generation = new_generation
+
+    @staticmethod
+    def value_counts(players):
+        string_list = [player.display_without_keys(['display_name', 'generation', 'score']) for player in players]
+
+        # Initialize a defaultdict with int as the default factory
+        string_count_dict = defaultdict(int)
+
+        # Count the strings and store the counts in the dictionary
+        for string in string_list:
+            string_count_dict[string] += 1
+
+        # Convert the defaultdict to a regular dictionary if needed
+        string_count_dict = dict(string_count_dict)
+
+        return string_count_dict
+
+    def visualize_history(self):
+        df = self.history_as_df()
+        # helper.visualize_tournament_history(df)
+
+        # Calculate the total count for each generation
+        generation_totals = df.sum(axis=1)
+
+        # Calculate the percentage of each name in each generation
+        df_percentage = df.div(generation_totals, axis=0) * 100
+
+        # Create a 100% stacked bar chart
+        ax = df_percentage.plot(kind='bar', stacked=True, figsize=(10, 6))
+
+        # Set labels and title
+        ax.set_ylabel('Percentage')
+        ax.set_xlabel('Generation')
+        ax.set_title('Percentage of Names in Each Generation')
+
+        # Display the chart
+        plt.legend(title='Name')
+        plt.show()
+
+    def history_as_df(self):
+        diversity_history = [self.value_counts(generation) for generation in self.generations]
+        all_names = diversity_history[0].keys()
+
+        for diversity_dict in diversity_history:
+            zero_amounts = {name: 0 for name in all_names if name not in diversity_dict}
+            diversity_dict.update(zero_amounts)
+
+        df = pd.DataFrame(diversity_history)
+
+        df.index = [f'Gen. {i}' for i in range(0, len(diversity_history))]
+
+        return df
