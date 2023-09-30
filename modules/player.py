@@ -7,12 +7,15 @@ from strategies import Strategy
 class Player(Debuggable):
     def __init__(self,
                  name: str = 'Nameless Player',
+                 generation: int = 0,
                  strategy: Strategy = Strategy(),
                  debug: bool = False):
 
         super().__init__(debug=debug)
 
         self.name = name
+        self.generation = generation
+        self.display_name = self.name + f' (gen. {generation})'
         self.strategy = strategy
         self.score = 0
 
@@ -30,6 +33,8 @@ class Player(Debuggable):
             self.score += 3
 
     def copy(self):
-        new_player = Player(strategy=self.strategy,
+        new_player = Player(name=self.display_name,
+                            generation=self.generation + 1,
+                            strategy=self.strategy,
                             debug=self.debug)
         return new_player

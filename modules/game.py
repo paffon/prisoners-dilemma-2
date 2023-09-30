@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
     game = Game(player_1=Player(strategy=s1),
                 player_2=Player(strategy=s2),
-                rounds_per_game=50,
+                rounds_per_game=5,
                 error_rate=0.25,
                 debug=True)
 

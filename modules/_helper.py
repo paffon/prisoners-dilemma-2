@@ -1,4 +1,5 @@
-from strategies import Strategy
+import random
+import re
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -95,25 +96,23 @@ def put_parts_together(instructions, separator=SEPARATOR):
 
 
 def print_game_title(game):
-    part_0 = 'Round #'
-    part_1 = game.player_1.strategy.name
-    part_2 = game.player_2.strategy.name
-
-    instructions = [
-        (part_0, NARROW_COLUMN),
-        (part_1, WIDE_COLUMN),
-        (part_2, WIDE_COLUMN)
+    line_title = [
+        (game.display_name, NARROW_COLUMN),
+        (game.player_1.display_name, WIDE_COLUMN),
+        (game.player_2.display_name, WIDE_COLUMN),
     ]
+    line_strategies = [
+        ('Strategies: ', NARROW_COLUMN),
+        (game.player_1.strategy.display_name, WIDE_COLUMN),
+        (game.player_2.strategy.display_name, WIDE_COLUMN),
+    ]
+    for line in [line_title, line_strategies]:
+        game.print(put_parts_together(line))
 
-    s = '\n' + put_parts_together(instructions)
-    s += '\n' + '_' * OVERALL_WIDTH
-
-    game.print(s)
+    game.print('_' * OVERALL_WIDTH)
 
 
 def print_round_outcome(game, data):
-    part_0 = 'Round ' + data['round number']
-
     decided_1 = data['decided 1']
     decided_2 = data['decided 2']
 
@@ -123,35 +122,31 @@ def print_round_outcome(game, data):
     print_actual_1 = f'->{actual_1}' if actual_1 != decided_1 else ''
     print_actual_2 = f'->{actual_2}' if actual_2 != decided_2 else ''
 
-    part_1 = f"\'{data['thoughts 1']}\': {data['decided 1']}{print_actual_1}"
-    part_2 = f"\'{data['thoughts 2']}\': {data['decided 2']}{print_actual_2}"
-
-    instructions = [
-        (part_0, NARROW_COLUMN),
-        (part_1, WIDE_COLUMN),
-        (part_2, WIDE_COLUMN)
+    line_title = [('Round ' + data['round number'], NARROW_COLUMN)]
+    line_thoughts = [
+        ('Thoughts:', NARROW_COLUMN),
+        (f"\'{data['thoughts 1']}\'", WIDE_COLUMN),
+        (f"\'{data['thoughts 2']}\'", WIDE_COLUMN)
     ]
-
-    thoughts_and_actions = put_parts_together(instructions)
-
-    scores = put_parts_together([
-        ('Score:', NARROW_COLUMN),
+    line_actions = [
+        ('Actions:', NARROW_COLUMN),
+        (f"{data['decided 1']}{print_actual_1}", WIDE_COLUMN),
+        (f"{data['decided 2']}{print_actual_2}", WIDE_COLUMN)
+    ]
+    line_scores = [
+        ('Scores:', NARROW_COLUMN),
         (data['score 1'], WIDE_COLUMN),
-        (data['score 2'], WIDE_COLUMN),
-    ])
-
-    moves_1 = data['moves 1']
-    moves_2 = data['moves 2']
-
-    moves = put_parts_together([
+        (data['score 2'], WIDE_COLUMN)
+    ]
+    line_moves = [
         ('Moves:', NARROW_COLUMN),
-        (moves_1, WIDE_COLUMN),
-        (moves_2, WIDE_COLUMN),
-    ])
+        (data['moves 1'], WIDE_COLUMN),
+        (data['moves 2'], WIDE_COLUMN),
+    ]
+    for line in [line_title, line_thoughts, line_actions, line_scores, line_moves]:
+        game.print(put_parts_together(line))
 
-    game.print(thoughts_and_actions + '\n' + scores + '\n' + moves)
-
-    game.print('_' * OVERALL_WIDTH)
+    # game.print('_' * OVERALL_WIDTH)
 
 
 def consecutive_equal_length_from_the_end(arr):
@@ -172,9 +167,9 @@ def consecutive_equal_length_from_the_end(arr):
     return count
 
 
-def visualize_game_outcome(strategy_1: Strategy,
+def visualize_game_outcome(strategy_1,
                            scores_1: list,
-                           strategy_2: Strategy,
+                           strategy_2,
                            scores_2: list,
                            game_info: dict):
     """
@@ -263,7 +258,7 @@ def add_sign(number):
 
 def summarize_game(game, initial_score_1, moves_1, initial_score_2, moves_2):
     line_sep = '_' * OVERALL_WIDTH
-    game.print(f'\n{line_sep}\nGAME SUMMARY:\n')
+    game.print(f'\n{line_sep}\n{game.display_name} summary:\n')
     score_delta_1 = game.player_1.score - initial_score_1
     score_delta_2 = game.player_2.score - initial_score_2
 
@@ -276,8 +271,8 @@ def summarize_game(game, initial_score_1, moves_1, initial_score_2, moves_2):
     # Display players' properties and score gain/loss in this game
     line_names_and_scores = [
         ('Names & scores', NARROW_COLUMN),
-        (f'{game.player_1.name}, score: {game.player_1.score} ({signed_delta_1})', col_width),
-        (f'{game.player_2.name}, score: {game.player_2.score} ({signed_delta_2})', col_width),]
+        (f'{game.player_1.display_name}, score: {game.player_1.score} ({signed_delta_1})', col_width),
+        (f'{game.player_2.display_name}, score: {game.player_2.score} ({signed_delta_2})', col_width), ]
     line_strategies = [
         ('Strategies', NARROW_COLUMN),
         (str(game.player_1.strategy), col_width),
@@ -291,3 +286,29 @@ def summarize_game(game, initial_score_1, moves_1, initial_score_2, moves_2):
     for line in [line_names_and_scores, line_strategies, line_moves]:
         printable = put_parts_together(line)
         game.print(printable + '\n')
+
+
+def scramble_list(array: list, chaos_factor: float):
+    """
+    Scramble the elements in a list based on a chaos factor.
+
+    Args:
+        array (list): The input list to be scrambled.
+        chaos_factor (float): A value between 0 and 1 indicating the degree of scrambling.
+
+    Returns:
+        list: The scrambled list.
+
+    """
+    # Calculate the number of elements to move based on the chaos_factor.
+    num_elements_to_move = int(len(array) * chaos_factor)
+
+    for _ in range(num_elements_to_move):
+        # Remove an element from the list
+        element_to_move = array.pop(random.randint(0, len(array) - 1))
+
+        # Generate a random index and reinsert the element at that index
+        random_index = random.randint(0, len(array))
+        array.insert(random_index, element_to_move)
+
+    return array

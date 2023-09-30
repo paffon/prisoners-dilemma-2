@@ -1,13 +1,13 @@
 class Debuggable:
     def __init__(self, name: str = 'Nameless Debuggable', debug: bool = False):
-        self.name = name
+        self.display_name = name
         self.debug = debug
 
     def __repr__(self):
         # Use self.__dict__ to get a dictionary of all instance attributes
         keys_to_include = self.get_keys_to_include_in_representation()
         attrs = ', '.join(f"{key}={value}" for key, value in self.__dict__.items() if key in keys_to_include)
-        my_name = self.name
+        my_name = self.display_name
         return f"\'{my_name}\' ({attrs})"
 
     def get_keys_to_include_in_representation(self):
