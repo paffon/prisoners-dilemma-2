@@ -141,7 +141,8 @@ class Tournament(Debuggable):
 
     @staticmethod
     def value_counts(players):
-        string_list = [player.display_without_keys(['display_name', 'generation', 'score']) for player in players]
+        strategies = [player.strategy for player in players]
+        string_list = [strategy.display_without_keys(['display_name', 'generation', 'score', 'debug']) for strategy in strategies]
 
         # Initialize a defaultdict with int as the default factory
         string_count_dict = defaultdict(int)
@@ -157,25 +158,7 @@ class Tournament(Debuggable):
 
     def visualize_history(self):
         df = self.history_as_df()
-        # helper.visualize_tournament_history(df)
-
-        # Calculate the total count for each generation
-        generation_totals = df.sum(axis=1)
-
-        # Calculate the percentage of each name in each generation
-        df_percentage = df.div(generation_totals, axis=0) * 100
-
-        # Create a 100% stacked bar chart
-        ax = df_percentage.plot(kind='bar', stacked=True, figsize=(10, 6))
-
-        # Set labels and title
-        ax.set_ylabel('Percentage')
-        ax.set_xlabel('Generation')
-        ax.set_title('Percentage of Names in Each Generation')
-
-        # Display the chart
-        plt.legend(title='Name')
-        plt.show()
+        helper.visualize_tournament_history(df)
 
     def history_as_df(self):
         diversity_history = [self.value_counts(generation) for generation in self.generations]

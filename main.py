@@ -1,3 +1,5 @@
+import random
+
 import modules.strategies as strategies
 from modules.player import Player as Player
 from modules.tournament import Tournament
@@ -5,11 +7,20 @@ from modules.tournament import Tournament
 if __name__ == '__main__':
     debug = True
 
-    players = [Player(f'p{i+1}', debug=debug) for i in range(10)]
+    all_strategies = [
+        strategies.Strategy(),
+        strategies.Cheater(),
+        strategies.Goody(),
+        strategies.Copycat(),
+        strategies.Random(),
+        strategies.MajorityRule()
+    ] * 3
+
+    players = [Player(f'p{i+1}', strategy=strategy, debug=debug) for i, strategy in enumerate(all_strategies)]
 
     tournament = Tournament(players=players,
-                            games_between_each_two_players=1,
-                            rounds_per_game=5,
+                            games_between_each_two_players=5,
+                            rounds_per_game=100,
                             error_rate=.0,
                             survival_rate=.3,
                             survival_bias=.05,
@@ -24,7 +35,7 @@ if __name__ == '__main__':
 
     for _ in range(4):
         tournament.go(game_printouts_instructions=game_printouts_instructions,
-                      summarize_tournament=True)
+                      summarize_tournament=False)
 
         tournament.add_new_generation()
 

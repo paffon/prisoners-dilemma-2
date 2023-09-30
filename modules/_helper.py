@@ -312,3 +312,23 @@ def scramble_list(array: list, chaos_factor: float):
         array.insert(random_index, element_to_move)
 
     return array
+
+
+def visualize_tournament_history(df):
+    # Calculate the total count for each generation
+    generation_totals = df.sum(axis=1)
+
+    # Calculate the percentage of each name in each generation
+    df_percentage = df.div(generation_totals, axis=0) * 100
+
+    # Create a 100% stacked bar chart
+    ax = df_percentage.plot(kind='bar', stacked=True, figsize=(10, 6))
+
+    # Set labels and title
+    ax.set_ylabel('Percentage')
+    ax.set_xlabel('Generation')
+    ax.set_title('Percentage of Names in Each Generation')
+
+    # Display the chart
+    plt.legend(title='Name')
+    plt.show()
