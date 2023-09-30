@@ -32,8 +32,8 @@ class Player(Debuggable):
         if their_action == 1:
             self.score += 3
 
-    def copy(self):
-        new_player = Player(name=self.display_name,
+    def give_birth(self):
+        new_player = Player(name=self.name,
                             generation=self.generation + 1,
                             strategy=self.strategy,
                             debug=self.debug)

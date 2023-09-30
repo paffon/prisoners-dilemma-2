@@ -50,9 +50,16 @@ class Tournament(Debuggable):
         sorted_list = sorted(self.players, key=lambda x: -x.score)
 
         self.print(f'{total_games} games played.')
-        separator = '\n\t'
-        printable = '\t' + separator.join([str(player) for player in sorted_list])
-        self.print(f'Top scores:\n{printable}')
+        self.print('Ranking:')
+
+        amount_of_surviving_players = round(self.survival_rate * len(self.players))
+        max_width = max([len(str(player)) for player in self.players])
+        for i, player in enumerate(sorted_list):
+            if i == amount_of_surviving_players - 1:
+                self.print('\t' + 'Survival boundary'.center(max_width,'-'))
+            self.print(f'\t{i}. {player}')
+
+        pass
 
     def get_the_surviving_players(self):
         """
@@ -79,11 +86,47 @@ class Tournament(Debuggable):
         return surviving_players
 
     def get_next_generation_of_players(self):
+        amount_of_players_in_the_tournament_in_total = len(self.players)
+        survived_players = self.get_the_surviving_players()
+        amount_of_survived_players = len(survived_players)
+        multiplication_factors = self.get_multiplication_factors(
+            amount_of_players_in_the_tournament_in_total,
+            amount_of_survived_players
+        )
 
-        total_players = len(self.players)
+        new_generation = self.multiply_players(survived_players, multiplication_factors)
 
-        surviving_players = self.get_the_surviving_players()
+        return new_generation
 
-        amount_of_surviving_players = len(surviving_players)
+    @staticmethod
+    def get_multiplication_factors(total_amount: int, survived_amount: int):
+        """
+        Spread the total amount over an array of survived_amount elements.
 
-        multiplication_factor = math.floor(total_players / amount_of_surviving_players)
+        Args:
+            total_amount (int): The total amount to distribute.
+            survived_amount (int): The number of elements to distribute the total amount among.
+
+        Returns:
+            List[int]: An array of multiplication factors representing the distribution.
+
+        Example:
+            If total_amount is 10 and survived_amount is 3, the result could be [4, 3, 3],
+            meaning 4 units go to the first element, and 3 units each to the second and third elements.
+        """
+        multiplication_factors = [0] * survived_amount
+
+        i = 0
+        for _ in range(total_amount):
+            multiplication_factors[i % survived_amount] += 1
+            i += 1
+
+        return multiplication_factors
+
+    @staticmethod
+    def multiply_players(survived_players, multiplication_factors):
+        new_generation = list()
+        for factor, player in zip(multiplication_factors, survived_players):
+            for _ in range(factor):
+                new_generation.append(player.give_birth())
+        return new_generation

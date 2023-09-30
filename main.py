@@ -5,7 +5,7 @@ from modules.tournament import Tournament
 if __name__ == '__main__':
     debug = True
 
-    players = [Player(f'p{i+1}', debug=debug) for i in range(20)]
+    players = [Player(f'p{i+1}', debug=debug) for i in range(100)]
 
     tournament = Tournament(players=players,
                             games_between_each_two_players=1,
@@ -18,11 +18,12 @@ if __name__ == '__main__':
     game_printouts_instructions = {
         # 'show_game_title': True,
         # 'show_round_outcome': True,
-        'summarize_game': True,
+        # 'summarize_game': True,
         # 'visualize_scores': False
     }
 
     tournament.go(game_printouts_instructions=game_printouts_instructions,
                   summarize_tournament=True)
 
-    surviving_player = tournament.get_the_surviving_players()
+    tournament.players = tournament.get_next_generation_of_players()
+
