@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 NARROW_COLUMN = 10  # width in characters
 WIDE_COLUMN = 30  # width in characters
@@ -132,7 +133,16 @@ def print_round_outcome(game, data):
         (data['score 2'], WIDE_COLUMN),
     ])
 
-    game.print(thoughts_and_actions + '\n' + scores)
+    moves_1 = data['moves 1']
+    moves_2 = data['moves 2']
+
+    moves = put_parts_together([
+        ('Moves:', NARROW_COLUMN),
+        (moves_1, WIDE_COLUMN),
+        (moves_2, WIDE_COLUMN),
+    ])
+
+    game.print(thoughts_and_actions + '\n' + scores + '\n' + moves)
 
     game.print('_' * OVERALL_WIDTH)
 
@@ -154,38 +164,55 @@ def consecutive_equal_length_from_the_end(arr):
         i -= 1
     return count
 
-
-def visualize_game_outcome(name_1, scores_1, name_2, scores_2):
+def visualize_game_outcome(strategy_1, scores_1, strategy_2, scores_2, game_info):
     """
-    Visualizes the game outcome over rounds for two players.
+    Visualizes the game outcome over rounds for two players with move labels as score deltas.
 
     Args:
-        name_1 (str): The name of the first player.
+        strategy_1 (str): The first strategy object itself.
         scores_1 (list): List of scores for the first player.
-        name_2 (str): The name of the second player.
+        strategy_2 (str): The seconds strategy object itself.
         scores_2 (list): List of scores for the second player.
 
     Returns:
         None
 
     This function takes the names and scores of two players and plots their scores
-    over rounds using Matplotlib.
+    over rounds using Matplotlib as line plots with move labels as score deltas.
 
     """
     # Create a list of rounds (assuming equal number of rounds for both players)
     rounds = range(1, len(scores_1) + 1)
 
-    # Plot the scores for each player
-    plt.plot(rounds, scores_1, label=name_1, marker='o')  # Plot scores for player 1
-    plt.plot(rounds, scores_2, label=name_2, marker='s')  # Plot scores for player 2
+    # Calculate score deltas for each player
+    score_deltas_1 = [scores_1[i] - (0 if i == 0 else scores_1[i - 1]) for i in range(len(scores_1))]
+    score_deltas_2 = [scores_2[i] - (0 if i == 0 else scores_2[i - 1]) for i in range(len(scores_2))]
+
+    # Create line plots for each player with scores as data points and default colors
+    # Line plot for player 1
+    plt.plot(rounds, scores_1, label=strategy_1, marker='h', linestyle='-', markersize=5)
+    # Line plot for player 2
+    plt.plot(rounds, scores_2, label=strategy_2, marker='H', linestyle='-', markersize=5)
+
+    # Add labels for score deltas as annotations with matching colors
+    for round_num, delta_1, delta_2, score_1, score_2 in zip(rounds, score_deltas_1, score_deltas_2, scores_1, scores_2):
+        if round_num != 1:  # Skip the first round as there is no previous round to compare
+            plt.annotate(f'+{delta_1}', (round_num + .1, score_1), textcoords="offset points", xytext=(
+            0, 10), ha='center', color='tab:blue')
+            plt.annotate(f'+{delta_2}', (round_num - .1, score_2), textcoords="offset points", xytext=(
+            0, 10), ha='center', color='tab:orange')
 
     # Add labels and title
     plt.xlabel('Round')  # Label for x-axis
     plt.ylabel('Score')  # Label for y-axis
-    plt.title('Game Outcome Over Rounds')  # Title of the plot
+    printable_game_info = '\n'.join([f'{k}: {v}' for k, v in game_info.items()])
+    plt.title(f'Game Outcome Over Rounds\n{printable_game_info}')  # Title of the plot
+
+    # Set the x-axis limits to start from 0 and end a bit over the maximum round number
+    plt.xlim(0, max(rounds)+1)
 
     # Show integer values on the x-axis ticks
-    plt.xticks(range(1, len(rounds) + 1))
+    plt.xticks(rounds)
 
     # Add a legend
     plt.legend()  # Display legend for player names
