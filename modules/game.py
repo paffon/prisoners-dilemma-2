@@ -41,16 +41,12 @@ class Game(Debuggable):
            visualize_scores: bool = False):
 
         # Initialize conditions and variables
-
         player_1 = self.player_1
         player_2 = self.player_2
-
         initial_score_1 = player_1.score
         initial_score_2 = player_2.score
-
         moves_1 = []
         moves_2 = []
-
         scores_in_game_1 = []
         scores_in_game_2 = []
 
@@ -61,6 +57,8 @@ class Game(Debuggable):
             thoughts_1, decided_action_1 = player_1.decide(moves_1, moves_2)
             thoughts_2, decided_action_2 = player_2.decide(moves_2, moves_1)
 
+            # The game may decide to flip a player's intended action, depending on the game's
+            # error rate, or for other reasons.
             actual_action_1 = flip(decided_action_1) if self.should_flip() else decided_action_1
             actual_action_2 = flip(decided_action_2) if self.should_flip() else decided_action_2
 
@@ -70,8 +68,11 @@ class Game(Debuggable):
             player_1.update_score(actual_action_1, actual_action_2)
             player_2.update_score(actual_action_2, actual_action_1)
 
-            scores_in_game_1.append(self.player_1.score)
-            scores_in_game_2.append(self.player_2.score)
+            # The scores in the game should reflect only the points gained or lost in the current
+            # game. Therefore, to calculate the score for a player in a given moment, we subtract
+            # their score at the start of the game from the score they have at the moment.
+            scores_in_game_1.append(self.player_1.score - initial_score_1)
+            scores_in_game_2.append(self.player_2.score - initial_score_2)
 
             if show_round_outcome and self.debug:
                 round_data = {k: str(v) for k, v in {
@@ -90,17 +91,7 @@ class Game(Debuggable):
                 helper.print_round_outcome(self, round_data)
 
         if summarize_game and self.debug:
-            score_delta_1 = self.player_1.score - initial_score_1
-            score_delta_2 = self.player_2.score - initial_score_2
-
-            signed_delta_1 = helper.add_sign(score_delta_1)
-            signed_delta_2 = helper.add_sign(score_delta_2)
-
-            print(player_1, f'{signed_delta_1} score')
-            print(player_2, f'{signed_delta_2} score')
-
-            print(f'Moves player 1: {moves_1}')
-            print(f'Moves player 2: {moves_2}')
+            helper.summarize_game(self, initial_score_1, moves_1, initial_score_2, moves_2)
 
         if visualize_scores and self.debug:
             game_info = {
@@ -122,4 +113,8 @@ if __name__ == '__main__':
                 rounds_per_game=50,
                 error_rate=0.25,
                 debug=True)
-    game.go(show_game_title=True, show_round_outcome=True, summarize_game=True, visualize_scores=True)
+
+    game.go(show_game_title=True,
+            show_round_outcome=True,
+            summarize_game=True,
+            visualize_scores=True)

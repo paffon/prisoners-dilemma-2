@@ -20,7 +20,8 @@ class Strategy(Debuggable):
             return 'I start by cooperating'
 
     def decide(self, my_moves, their_moves):
-        return "Default decision", random.random() > 0.75
+        move = 1 if random.random() > 0.75 else 0
+        return "Default decision", move
 
 
 class Cheater(Strategy):
@@ -77,17 +78,18 @@ class Random(Strategy):
 
 
 class MajorityRule(Strategy):
-    """majority rule - I do what my opponent did most of, in the last p% of their moves"""
+    """Majority rule - I do what my opponent did most of, in the last p% of their moves"""
     def __init__(self, first_move: int = 1, minimal_cooperation_ratio: float = 0.5,
                  p_of_their_last_moves: float = 1.0, attenuation_power: float = 0.0,
                  debug: bool = False):
         """
-        Employ the majority rule.
-        :param first_move:
-        :param minimal_cooperation_ratio:
-        :param p_of_their_last_moves:
-        :param attenuation_power: the higher the number, the more weight is given to recent moves
-        :return:
+        Initialize Majority Rule class.
+
+        :param first_move (int): The first move to be made.
+        :param minimal_cooperation_ratio (float): Below this ratio, I will retaliate with a cheat. The higher the number, the more my opponent needs to cooperate to make me cooperate.
+        :param p_of_their_last_moves (float): The portion of their last moves I will consider.
+        :param attenuation_power (float): The higher the number, the more weight is given to recent moves.
+        :return: None
         """
         super().__init__(name='Majority Rule', first_move=first_move, debug=debug)
 

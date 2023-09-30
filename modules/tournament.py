@@ -4,6 +4,7 @@ from _debuggable import Debuggable
 
 from game import Game
 
+
 class Tournament(Debuggable):
     def __init__(self,
                  players,
@@ -23,14 +24,18 @@ class Tournament(Debuggable):
         self.top_percentage = top_percentage
         self.survival_bias = survival_bias
 
-    def go(self, summarize_tournament: bool = False):
+    def go(self, game_printouts_instructions: dict, summarize_tournament: bool = False):
         all_tuples = list(combinations(self.players, 2))
         for player_1, player_2 in all_tuples:
-            Game(player_1=player_1,
-                 player_2=player_2,
-                 rounds_per_game=self.rounds_per_game,
-                 error_rate=self.error_rate,
-                 debug=self.debug).go()
+            game = Game(player_1=player_1,
+                        player_2=player_2,
+                        rounds_per_game=self.rounds_per_game,
+                        error_rate=self.error_rate,
+                        debug=self.debug)
+            game.go(show_game_title=game_printouts_instructions.get('show_game_title', None),
+                    show_round_outcome=game_printouts_instructions.get('show_round_outcome', None),
+                    summarize_game=game_printouts_instructions.get('summarize_game', None),
+                    visualize_scores=game_printouts_instructions.get('visualize_scores', None))
         if summarize_tournament and self.debug:
             self.summarize(all_tuples)
 

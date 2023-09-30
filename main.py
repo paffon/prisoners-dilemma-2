@@ -20,4 +20,12 @@ if __name__ == '__main__':
                             survival_bias=.0,
                             debug=debug)
 
-    tournament.go(summarize_tournament=True)
+    game_printouts_instructions = {
+        # 'show_game_title': True,
+        # 'show_round_outcome': True,
+        'summarize_game': True,
+        # 'visualize_scores': False
+    }
+
+    tournament.go(game_printouts_instructions=game_printouts_instructions,
+                  summarize_tournament=True)

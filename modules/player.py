@@ -10,14 +10,15 @@ class Player(Debuggable):
                  strategy: Strategy = Strategy(),
                  debug: bool = False):
 
-        super().__init__(debug)
+        super().__init__(debug=debug)
 
         self.name = name
         self.strategy = strategy
         self.score = 0
 
     def decide(self, my_moves, their_moves):
-        thoughts, decided_action = self.strategy.decide(my_moves, their_moves)
+        strategy = self.strategy
+        thoughts, decided_action = strategy.decide(my_moves, their_moves)
 
         return thoughts, decided_action
 
