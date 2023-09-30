@@ -142,7 +142,7 @@ class Tournament(Debuggable):
     @staticmethod
     def value_counts(players):
         strategies = [player.strategy for player in players]
-        string_list = [strategy.display_without_keys(['display_name', 'generation', 'score', 'debug']) for strategy in strategies]
+        string_list = [strategy.display_without_keys(['display_name', 'generation', 'score', 'debug']).lstrip('name=') for strategy in strategies]
 
         # Initialize a defaultdict with int as the default factory
         string_count_dict = defaultdict(int)

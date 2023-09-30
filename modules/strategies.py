@@ -6,11 +6,10 @@ from _debuggable import Debuggable
 
 
 class Strategy(Debuggable):
-    def __init__(self, name: str = 'Nameless Strategy', first_move: int = None, debug: bool = False):
+    def __init__(self, name: str = 'Nameless Strategy', first_move=1, debug: bool = False):
         super().__init__(debug=debug)
         self.name = name
-        self.first_move = first_move
-        pass
+        self.first_move = {1: 1, 0: 0, 'rand': 1 if random.random() > .5 else 0}[first_move]
 
     def first_move_thoughts(self):
         if self.first_move is None:
@@ -27,7 +26,7 @@ class Strategy(Debuggable):
 
 class Cheater(Strategy):
     def __init__(self, debug: bool = False):
-        super().__init__(name='Cheater', debug=debug)
+        super().__init__(name='Cheater', first_move=0, debug=debug)
 
     def decide(self, my_moves, their_moves):
         return "Always cheat", 0
@@ -68,7 +67,7 @@ class Copycat(Strategy):
 class Random(Strategy):
     def __init__(self, ratio: float = .5, debug: bool = False):
         name = 'Random ' + str(int(ratio * 100)) + '% to cooperate'
-        super().__init__(name=name, debug=debug)
+        super().__init__(name=name, first_move='rand', debug=debug)
         self.ratio = ratio
 
     def decide(self, my_moves, their_moves):
