@@ -13,19 +13,17 @@ def flip(action):
 
 class Game(Debuggable):
     def __init__(self,
+                 name: str = 'Nameless Game',
                  player_1: Player = Player(),
                  player_2: Player = Player(),
                  rounds_per_game: int = 0,
                  error_rate: float = .0,
                  debug: bool = False):
 
-        super().__init__(debug=debug)
+        super().__init__(name=name, debug=debug)
 
         self.player_1 = player_1
         self.player_2 = player_2
-
-        self.moves_1 = []
-        self.moves_2 = []
 
         self.scores_1 = []
         self.scores_2 = []
@@ -60,8 +58,8 @@ class Game(Debuggable):
             helper.print_game_title(self)
 
         for round_number in range(1, self.rounds_per_game + 1):
-            thoughts_1, decided_action_1 = player_1.decide(self.moves_1, self.moves_2)
-            thoughts_2, decided_action_2 = player_2.decide(self.moves_2, self.moves_1)
+            thoughts_1, decided_action_1 = player_1.decide(moves_1, moves_2)
+            thoughts_2, decided_action_2 = player_2.decide(moves_2, moves_1)
 
             actual_action_1 = flip(decided_action_1) if self.should_flip() else decided_action_1
             actual_action_2 = flip(decided_action_2) if self.should_flip() else decided_action_2
@@ -85,7 +83,9 @@ class Game(Debuggable):
                     'actual 1': actual_action_1,
                     'actual 2': actual_action_2,
                     'score 1': self.player_1.score,
-                    'score 2': self.player_2.score
+                    'score 2': self.player_2.score,
+                    'moves 1': moves_1,
+                    'moves 2': moves_2
                 }.items()}
                 helper.print_round_outcome(self, round_data)
 
@@ -99,16 +99,27 @@ class Game(Debuggable):
             print(player_1, f'{signed_delta_1} score')
             print(player_2, f'{signed_delta_2} score')
 
+            print(f'Moves player 1: {moves_1}')
+            print(f'Moves player 2: {moves_2}')
+
         if visualize_scores and self.debug:
-            helper.visualize_game_outcome(self.player_1.strategy.name,
-                                          scores_in_game_1,
-                                          self.player_2.strategy.name,
-                                          scores_in_game_2)
+            game_info = {
+                'error_rate': self.error_rate
+            }
+            helper.visualize_game_outcome(
+                self.player_1.strategy, scores_in_game_1,
+                self.player_2.strategy, scores_in_game_2,
+                game_info
+            )
 
 
 if __name__ == '__main__':
-    game = Game(player_1=Player(strategy=strategies.Random(ratio=.95)),
-                player_2=Player(strategy=strategies.Copycat(change_action_after=2)),
-                rounds_per_game=10,
+    s1 = strategies.MajorityRule()
+    s2 = strategies.Copycat()
+
+    game = Game(player_1=Player(strategy=s1),
+                player_2=Player(strategy=s2),
+                rounds_per_game=50,
+                error_rate=0.25,
                 debug=True)
-    game.go()
+    game.go(show_game_title=True, show_round_outcome=True, summarize_game=True, visualize_scores=True)
