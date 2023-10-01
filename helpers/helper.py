@@ -98,7 +98,7 @@ def put_rows_side_by_side(max_lines, strings_as_lists_of_lines, separator):
 
 
 def print_game_title(game):
-    game.print(game.name)
+
     line_title = [
         ('Players:', NARROW_COLUMN),
         (game.player_1.name, WIDE_COLUMN),
@@ -109,9 +109,9 @@ def print_game_title(game):
         (game.player_1.strategy.name, WIDE_COLUMN),
         (game.player_2.strategy.name, WIDE_COLUMN),
     ]
+    game.print(game.name)
     for line in [line_title, line_strategies]:
         game.print(put_parts_together(line))
-
     game.print('_' * OVERALL_WIDTH)
 
 
@@ -148,8 +148,6 @@ def print_round_outcome(game, data):
     ]
     for line in [line_title, line_thoughts, line_actions, line_scores, line_moves]:
         game.print(put_parts_together(line))
-
-    # game.print('_' * OVERALL_WIDTH)
 
 
 def consecutive_equal_length_from_the_end(arr):

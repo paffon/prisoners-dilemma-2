@@ -45,6 +45,8 @@ class Game(Debuggable):
         player_2 = self.player_2
         initial_score_1 = player_1.score
         initial_score_2 = player_2.score
+        intended_moves_1 = []
+        intended_moves_2 = []
         moves_1 = []
         moves_2 = []
         scores_in_game_1 = []
@@ -54,8 +56,11 @@ class Game(Debuggable):
             helper.print_game_title(self)
 
         for round_number in range(1, self.rounds_per_game + 1):
-            thoughts_1, decided_action_1 = player_1.decide(moves_1, moves_2)
-            thoughts_2, decided_action_2 = player_2.decide(moves_2, moves_1)
+            thoughts_1, decided_action_1 = player_1.decide(moves_1, moves_2, intended_moves_1)
+            thoughts_2, decided_action_2 = player_2.decide(moves_2, moves_1, intended_moves_2)
+
+            intended_moves_1.append(decided_action_1)
+            intended_moves_2.append(decided_action_2)
 
             # The game may decide to flip a player's intended action, depending on the game's
             # error rate, or for other reasons.

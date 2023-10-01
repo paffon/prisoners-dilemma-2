@@ -18,9 +18,9 @@ class Player(Debuggable):
         self.strategy = strategy
         self.score = score
 
-    def decide(self, my_moves, their_moves):
+    def decide(self, my_moves, their_moves, my_intended_moves):
         strategy = self.strategy
-        thoughts, decided_action = strategy.decide(my_moves, their_moves)
+        thoughts, decided_action = strategy.decide(my_moves, their_moves, my_intended_moves)
 
         return thoughts, decided_action
 
