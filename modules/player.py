@@ -1,5 +1,3 @@
-import _helper as helper
-
 from _debuggable import Debuggable
 from strategies import Strategy
 

@@ -14,23 +14,23 @@ if __name__ == '__main__':
         strategies.Copycat(),
         strategies.Random(),
         strategies.MajorityRule()
-    ] * 3
+    ] * 10
 
     players = [Player(f'p{i+1}', strategy=strategy, debug=debug) for i, strategy in enumerate(all_strategies)]
 
     tournament = Tournament(players=players,
-                            games_between_each_two_players=5,
+                            games_between_each_two_players=3,
                             rounds_per_game=100,
                             error_rate=.0,
                             survival_rate=.3,
-                            survival_bias=.05,
+                            survival_bias=.1,
                             debug=debug)
 
     game_printouts_instructions = {
         # 'show_game_title': True,
         # 'show_round_outcome': True,
         # 'summarize_game': True,
-        # 'visualize_scores': False
+        # 'visualize_scores': True
     }
 
     for _ in range(4):

@@ -1,4 +1,4 @@
-import _helper as helper
+from helpers import helper as helper
 import strategies
 
 from _debuggable import Debuggable

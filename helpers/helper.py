@@ -1,11 +1,12 @@
 import random
 import re
 
+from helpers import text_methods
 import matplotlib.pyplot as plt
 import numpy as np
 
 NARROW_COLUMN = 15  # width in characters
-WIDE_COLUMN = 31  # width in characters
+WIDE_COLUMN = 50  # width in characters
 SPACING = 5
 SEPARATOR = ' ' * SPACING + '| '
 OVERALL_WIDTH = NARROW_COLUMN + SPACING * 2 + WIDE_COLUMN * 2
@@ -18,57 +19,52 @@ def split_string_by_length(input_string, n):
     return [input_string[j:j + n] for j in range(0, len(input_string), n)]
 
 
-def split_long_string(long_string, width):
-    """
-    Split a long string into substrings of maximum length 'width' without breaking words.
+# def split_long_string(long_string, width):
+#     """
+#     Split a long string into substrings of maximum length 'width' without breaking words.
+#
+#     Args:
+#         long_string (str): The long string to be split.
+#         width (int): The maximum width for each substring.
+#
+#     Returns:
+#         list of str: A list of substrings.
+#     """
+#     if width <= 0:
+#         raise ValueError("Width must be a positive integer.")
+#
+#     # Initialize variables
+#     substrings = []
+#     current_width = 0
+#     current_substring = []
+#
+#     # Split the long string into words
+#     words = long_string.split()
+#
+#     for word in words:
+#         # If adding the current word to the current substring doesn't exceed the width
+#         if current_width + len(word) + len(current_substring) <= width:
+#             current_substring.append(word)
+#             current_width += len(word)
+#         else:
+#             # If adding the word exceeds the width, start a new substring
+#             substrings.append(" ".join(current_substring))
+#             current_substring = [word]
+#             current_width = len(word)
+#
+#     # Add the last remaining substring, if any
+#     if current_substring:
+#         substrings.append(" ".join(current_substring))
+#
+#     return substrings
 
-    Args:
-        long_string (str): The long string to be split.
-        width (int): The maximum width for each substring.
 
-    Returns:
-        list of str: A list of substrings.
-    """
-    if width <= 0:
-        raise ValueError("Width must be a positive integer.")
-
-    # Initialize variables
-    substrings = []
-    current_width = 0
-    current_substring = []
-
-    # Split the long string into words
-    words = long_string.split()
-
-    for word in words:
-        # If adding the current word to the current substring doesn't exceed the width
-        if current_width + len(word) + len(current_substring) <= width:
-            current_substring.append(word)
-            current_width += len(word)
-        else:
-            # If adding the word exceeds the width, start a new substring
-            substrings.append(" ".join(current_substring))
-            current_substring = [word]
-            current_width = len(word)
-
-    # Add the last remaining substring, if any
-    if current_substring:
-        substrings.append(" ".join(current_substring))
-
-    return substrings
-
-
-def put_parts_together(instructions, separator=SEPARATOR):
-    """
-    Converts a list of strings and widths to one printable string in columns.
-    :param instructions: A list of tuples of the form (str, int).
-    :return: A string in the form of printable columns
-    """
+def put_parts_together(instructions, separator: str = SEPARATOR):
     strings_as_lists_of_lines = []
     max_lines = 0
 
     for string, width in instructions:
-        list_of_lines = split_long_string(string, width)
+        list_of_lines = text_methods.wrap(string, width)
 
         padded_list_of_lines = []
 
@@ -79,6 +75,12 @@ def put_parts_together(instructions, separator=SEPARATOR):
         strings_as_lists_of_lines.append(padded_list_of_lines)
         max_lines = max(max_lines, len(padded_list_of_lines))
 
+    result = put_rows_side_by_side(max_lines, strings_as_lists_of_lines, separator)
+
+    return result
+
+
+def put_rows_side_by_side(max_lines, strings_as_lists_of_lines, separator):
     result = ''
 
     for line_number in range(max_lines):
@@ -96,8 +98,9 @@ def put_parts_together(instructions, separator=SEPARATOR):
 
 
 def print_game_title(game):
+    game.print(game.name)
     line_title = [
-        (game.name, NARROW_COLUMN),
+        ('Players:', NARROW_COLUMN),
         (game.player_1.name, WIDE_COLUMN),
         (game.player_2.name, WIDE_COLUMN),
     ]
@@ -122,7 +125,7 @@ def print_round_outcome(game, data):
     print_actual_1 = f'->{actual_1}' if actual_1 != decided_1 else ''
     print_actual_2 = f'->{actual_2}' if actual_2 != decided_2 else ''
 
-    line_title = [('Round ' + data['round number'], NARROW_COLUMN)]
+    line_title = [('\nRound ' + data['round number'], NARROW_COLUMN)]
     line_thoughts = [
         ('Thoughts:', NARROW_COLUMN),
         (f"\'{data['thoughts 1']}\'", WIDE_COLUMN),
@@ -265,22 +268,19 @@ def summarize_game(game, initial_score_1, moves_1, initial_score_2, moves_2):
     signed_delta_1 = add_sign(score_delta_1)
     signed_delta_2 = add_sign(score_delta_2)
 
-    col_width = max([len(f'{k}={v},') for k, v in game.player_1.strategy.__dict__.items()] +
-                    [len(f'{k}={v},') for k, v in game.player_2.strategy.__dict__.items()])
-
     # Display players' properties and score gain/loss in this game
     line_names_and_scores = [
         ('Names & scores', NARROW_COLUMN),
-        (f'{game.player_1.name}, score: {game.player_1.score} ({signed_delta_1})', col_width),
-        (f'{game.player_2.name}, score: {game.player_2.score} ({signed_delta_2})', col_width), ]
+        (f'{game.player_1.name}, score: {game.player_1.score} ({signed_delta_1})', WIDE_COLUMN),
+        (f'{game.player_2.name}, score: {game.player_2.score} ({signed_delta_2})', WIDE_COLUMN), ]
     line_strategies = [
         ('Strategies', NARROW_COLUMN),
-        (str(game.player_1.strategy), col_width),
-        (str(game.player_2.strategy), col_width)]
+        (str(game.player_1.strategy), WIDE_COLUMN),
+        (str(game.player_2.strategy), WIDE_COLUMN)]
     line_moves = [
         ('Moves', NARROW_COLUMN),
-        ('[' + ', '.join([str(action) for action in moves_1]) + ']', col_width),
-        ('[' + ', '.join([str(action) for action in moves_2]) + ']', col_width),
+        ('[' + ', '.join([str(action) for action in moves_1]) + ']', WIDE_COLUMN),
+        ('[' + ', '.join([str(action) for action in moves_2]) + ']', WIDE_COLUMN),
     ]
 
     for line in [line_names_and_scores, line_strategies, line_moves]:
@@ -340,7 +340,6 @@ def visualize_tournament_history(df):
 
     # Make x-ticks horizontal
     ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
-
 
     # Display the chart
     plt.legend(title='Name')

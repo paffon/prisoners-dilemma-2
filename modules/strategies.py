@@ -1,6 +1,6 @@
 import random
 
-import _helper as helper
+from helpers import helper as helper
 
 from _debuggable import Debuggable
 
