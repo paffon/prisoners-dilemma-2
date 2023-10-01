@@ -12,11 +12,11 @@ SEPARATOR = ' ' * SPACING + '| '
 OVERALL_WIDTH = NARROW_COLUMN + SPACING * 2 + WIDE_COLUMN * 2
 
 
-def split_string_by_length(input_string, n):
-    if n <= 0:
-        raise ValueError('Width must be longer than 0.')
-
-    return [input_string[j:j + n] for j in range(0, len(input_string), n)]
+# def split_string_by_length(input_string, n):
+#     if n <= 0:
+#         raise ValueError('Width must be longer than 0.')
+#
+#     return [input_string[j:j + n] for j in range(0, len(input_string), n)]
 
 
 # def split_long_string(long_string, width):
