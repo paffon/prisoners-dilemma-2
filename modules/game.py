@@ -56,8 +56,8 @@ class Game(Debuggable):
             helper.print_game_title(self)
 
         for round_number in range(1, self.rounds_per_game + 1):
-            thoughts_1, decided_action_1 = player_1.decide(moves_1, moves_2, intended_moves_1)
-            thoughts_2, decided_action_2 = player_2.decide(moves_2, moves_1, intended_moves_2)
+            thoughts_1, decided_action_1 = player_1.decide(intended_moves_1, moves_1, moves_2)
+            thoughts_2, decided_action_2 = player_2.decide(intended_moves_2, moves_2, moves_1)
 
             intended_moves_1.append(decided_action_1)
             intended_moves_2.append(decided_action_2)

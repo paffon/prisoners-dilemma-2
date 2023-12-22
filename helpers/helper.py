@@ -7,8 +7,8 @@ import numpy as np
 
 NARROW_COLUMN = 15  # width in characters
 WIDE_COLUMN = 50  # width in characters
-SPACING = 5
-SEPARATOR = ' ' * SPACING + '| '
+SPACING = 1
+SEPARATOR = ' ' * SPACING + '│ '
 OVERALL_WIDTH = NARROW_COLUMN + SPACING * 2 + WIDE_COLUMN * 2
 
 
@@ -63,8 +63,8 @@ def put_parts_together(instructions, separator: str = SEPARATOR):
     strings_as_lists_of_lines = []
     max_lines = 0
 
-    for string, width in instructions:
-        list_of_lines = text_methods.wrap(string, width)
+    for string, width, justify in instructions:
+        list_of_lines = text_methods.wrap(string, width, justify)
 
         padded_list_of_lines = []
 
@@ -100,14 +100,14 @@ def put_rows_side_by_side(max_lines, strings_as_lists_of_lines, separator):
 def print_game_title(game):
 
     line_title = [
-        ('Players:', NARROW_COLUMN),
-        (game.player_1.name, WIDE_COLUMN),
-        (game.player_2.name, WIDE_COLUMN),
+        ('Players:', NARROW_COLUMN, 'right'),
+        (game.player_1.name, WIDE_COLUMN, 'center'),
+        (game.player_2.name, WIDE_COLUMN, 'center'),
     ]
     line_strategies = [
-        ('Strategies: ', NARROW_COLUMN),
-        (game.player_1.strategy.name, WIDE_COLUMN),
-        (game.player_2.strategy.name, WIDE_COLUMN),
+        ('Strategies:', NARROW_COLUMN, 'right'),
+        (game.player_1.strategy.name, WIDE_COLUMN, 'center'),
+        (game.player_2.strategy.name, WIDE_COLUMN, 'center'),
     ]
     game.print(game.name)
     for line in [line_title, line_strategies]:
@@ -125,28 +125,29 @@ def print_round_outcome(game, data):
     print_actual_1 = f'->{actual_1}' if actual_1 != decided_1 else ''
     print_actual_2 = f'->{actual_2}' if actual_2 != decided_2 else ''
 
-    line_title = [('\nRound ' + data['round number'], NARROW_COLUMN)]
     line_thoughts = [
-        ('Thoughts:', NARROW_COLUMN),
-        (f"\'{data['thoughts 1']}\'", WIDE_COLUMN),
-        (f"\'{data['thoughts 2']}\'", WIDE_COLUMN)
+        ('Thoughts:', NARROW_COLUMN, 'right'),
+        (f"\'{data['thoughts 1']}\'", WIDE_COLUMN, 'left'),
+        (f"\'{data['thoughts 2']}\'", WIDE_COLUMN, 'left')
     ]
     line_actions = [
-        ('Actions:', NARROW_COLUMN),
-        (f"{data['decided 1']}{print_actual_1}", WIDE_COLUMN),
-        (f"{data['decided 2']}{print_actual_2}", WIDE_COLUMN)
+        ('Actions:', NARROW_COLUMN, 'right'),
+        (f"{data['decided 1']}{print_actual_1}", WIDE_COLUMN, 'left'),
+        (f"{data['decided 2']}{print_actual_2}", WIDE_COLUMN, 'left')
     ]
     line_scores = [
-        ('Scores:', NARROW_COLUMN),
-        (data['score 1'], WIDE_COLUMN),
-        (data['score 2'], WIDE_COLUMN)
+        ('Scores:', NARROW_COLUMN, 'right'),
+        (data['score 1'], WIDE_COLUMN, 'left'),
+        (data['score 2'], WIDE_COLUMN, 'left')
     ]
     line_moves = [
-        ('Moves:', NARROW_COLUMN),
-        (data['moves 1'], WIDE_COLUMN),
-        (data['moves 2'], WIDE_COLUMN),
+        ('Moves:', NARROW_COLUMN, 'right'),
+        (data['moves 1'], WIDE_COLUMN, 'left'),
+        (data['moves 2'], WIDE_COLUMN, 'left'),
     ]
-    for line in [line_title, line_thoughts, line_actions, line_scores, line_moves]:
+
+    game.print('\nRound ' + data['round number'])
+    for line in [line_thoughts, line_actions, line_scores, line_moves]:
         game.print(put_parts_together(line))
 
 
@@ -268,22 +269,21 @@ def summarize_game(game, initial_score_1, moves_1, initial_score_2, moves_2):
 
     # Display players' properties and score gain/loss in this game
     line_names_and_scores = [
-        ('Names & scores', NARROW_COLUMN),
-        (f'{game.player_1.name}, score: {game.player_1.score} ({signed_delta_1})', WIDE_COLUMN),
-        (f'{game.player_2.name}, score: {game.player_2.score} ({signed_delta_2})', WIDE_COLUMN), ]
+        ('Names & scores', NARROW_COLUMN, 'left'),
+        (f'{game.player_1.name}, score: {game.player_1.score} ({signed_delta_1})', WIDE_COLUMN, 'left'),
+        (f'{game.player_2.name}, score: {game.player_2.score} ({signed_delta_2})', WIDE_COLUMN, 'left')]
     line_strategies = [
-        ('Strategies', NARROW_COLUMN),
-        (str(game.player_1.strategy), WIDE_COLUMN),
-        (str(game.player_2.strategy), WIDE_COLUMN)]
+        ('Strategies', NARROW_COLUMN, 'left'),
+        (str(game.player_1.strategy), WIDE_COLUMN, 'left'),
+        (str(game.player_2.strategy), WIDE_COLUMN, 'left')]
     line_moves = [
-        ('Moves', NARROW_COLUMN),
-        ('[' + ', '.join([str(action) for action in moves_1]) + ']', WIDE_COLUMN),
-        ('[' + ', '.join([str(action) for action in moves_2]) + ']', WIDE_COLUMN),
+        ('Moves', NARROW_COLUMN, 'left'),
+        ('[' + ', '.join([str(action) for action in moves_1]) + ']', WIDE_COLUMN, 'left'),
+        ('[' + ', '.join([str(action) for action in moves_2]) + ']', WIDE_COLUMN, 'left'),
     ]
 
     for line in [line_names_and_scores, line_strategies, line_moves]:
-        printable = put_parts_together(line)
-        game.print(printable + '\n')
+        game.print(put_parts_together(line))
 
 
 def scramble_list(array: list, chaos_factor: float):

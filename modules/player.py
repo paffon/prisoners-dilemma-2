@@ -20,7 +20,7 @@ class Player(Debuggable):
 
     def decide(self, my_moves, their_moves, my_intended_moves):
         strategy = self.strategy
-        thoughts, decided_action = strategy.decide(my_moves, their_moves, my_intended_moves)
+        thoughts, decided_action = strategy.decide(my_intended_moves, my_moves, their_moves)
 
         return thoughts, decided_action
 

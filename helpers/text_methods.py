@@ -29,7 +29,7 @@ def wrap(text, width, just='left'):
         word = words.pop(0)
         len(word)  # This line appears to be missing an assignment. Perhaps you meant len(word)?
 
-        if len(word) + 1 > free_slots:  # +1 for space
+        if len(word) > free_slots:  # +1 for space
             if free_slots == 2:
                 lines.append(line)
                 line = ''

@@ -19,7 +19,7 @@ class Strategy(Debuggable):
         elif self.first_move == 1:
             return 'I start by cooperating'
 
-    def decide(self, my_moves, their_moves, my_intended_moves):
+    def decide(self, my_intended_moves, my_moves, their_moves):
         move = 1 if random.random() > 0.75 else 0
         return "Default decision", move
 
@@ -28,7 +28,7 @@ class Cheater(Strategy):
     def __init__(self, debug: bool = False):
         super().__init__(name='Cheater', first_move=0, debug=debug)
 
-    def decide(self, my_moves, their_moves):
+    def decide(self, my_intended_moves, my_moves, their_moves):
         return "Always cheat", 0
 
 
@@ -36,7 +36,7 @@ class Goody(Strategy):
     def __init__(self, debug: bool = False):
         super().__init__(name='Goody', debug=debug)
 
-    def decide(self, my_moves, their_moves, my_intended_moves):
+    def decide(self, my_intended_moves, my_moves, their_moves):
         return "Always cooperate", 1
 
 
@@ -46,7 +46,7 @@ class Copycat(Strategy):
         super().__init__(name=name, first_move=first_move, debug=debug)
         self.change_action_after = change_action_after
 
-    def decide(self, my_moves, their_moves, my_intended_moves):
+    def decide(self, my_intended_moves, my_moves, their_moves):
         if len(my_moves) == 0:
             return self.first_move_thoughts(), self.first_move
 
@@ -70,7 +70,7 @@ class Random(Strategy):
         super().__init__(name=name, first_move='rand', debug=debug)
         self.ratio = ratio
 
-    def decide(self, my_moves, their_moves, my_intended_moves):
+    def decide(self, my_intended_moves, my_moves, their_moves):
         thoughts = 'I am random'
         action = 1 if random.random() < self.ratio else 0
 
@@ -98,7 +98,7 @@ class MajorityRule(Strategy):
 
         self.attenuation_power = attenuation_power
 
-    def decide(self, my_moves, their_moves, my_intended_moves):
+    def decide(self, my_intended_moves, my_moves, their_moves):
         if len(my_moves) == 0:
             return self.first_move_thoughts(), self.first_move
 
