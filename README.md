@@ -6,7 +6,7 @@
 
 Clone the repository:
 
-```git clone https://github.com/your-username/prisoners-dilemma-2.git```
+```git clone https://github.com/paffon/prisoners-dilemma-2.git```
 
 ## Install dependencies:
 
